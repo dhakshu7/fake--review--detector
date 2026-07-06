@@ -5,39 +5,38 @@ import joblib
 model = joblib.load("model.pkl")
 vectorizer = joblib.load("vectorizer.pkl")
 
-# Page Title
-st.title("🕵️ Fake Review Detector")
-
-# ⭐ Rating Dropdown
-rating = st.selectbox(
-    "Select Rating",
-    [1, 2, 3, 4, 5]
+# Page Configuration
+st.set_page_config(
+    page_title="Fake Review Detector",
+    page_icon="🕵️",
+    layout="centered"
 )
 
-# 📝 Review Input
-review = st.text_area("Enter Review")
+# Title
+st.title("🕵️ Fake Review Detector")
+st.write("Detect whether an online product review is **Genuine** or **Fake** using Machine Learning.")
 
-# 🔘 Check Button
-if st.button("Check"):
+# Review Input
+review = st.text_area(
+    "📝 Enter Review",
+    placeholder="Example: This product is amazing and worth every penny!"
+)
+
+# Check Button
+if st.button("🔍 Check Review", use_container_width=True):
 
     if review.strip() == "":
-        st.warning("Please enter a review")
-
+        st.warning("⚠️ Please enter a review.")
     else:
-        # Combine rating and review
-        input_text = f"{rating} {review}"
+        # Convert review into vector
+        vec = vectorizer.transform([review])
 
-        # Convert to vector
-        vec = vectorizer.transform([input_text])
-
-        # Predict
+        # Prediction
         prediction = model.predict(vec)[0]
-
-        # Confidence
         prob = model.predict_proba(vec)[0]
 
-        # Show result
+        # Display Result
         if prediction == 1:
-            st.error(f"⚠️ Fake Review Detected ({prob[1]*100:.2f}% confidence)")
+            st.error(f"🚨 Fake Review Detected\n\nConfidence: {prob[1]*100:.2f}%")
         else:
-            st.success(f"✅ Genuine Review ({prob[0]*100:.2f}% confidence)")
+            st.success(f"✅ Genuine Review\n\nConfidence: {prob[0]*100:.2f}%")
