@@ -1,5 +1,24 @@
 import streamlit as st
 import joblib
+import base64
+
+def add_bg(image_file):
+    with open(image_file, "rb") as img:
+        encoded = base64.b64encode(img.read()).decode()
+
+    st.markdown(f"""
+    <style>
+    [data-testid="stAppViewContainer"] {{
+        background-image: url("data:image/png;base64,{encoded}");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+    }}
+    </style>
+    """, unsafe_allow_html=True)
+
+add_bg("background.png")
 
 # Load model and vectorizer
 model = joblib.load("model.pkl")
