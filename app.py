@@ -5,35 +5,38 @@ import joblib
 model = joblib.load("model.pkl")
 vectorizer = joblib.load("vectorizer.pkl")
 
-# Title
+# Page Title
 st.title("🕵️ Fake Review Detector")
 
-# ⭐ Rating Slider
-rating = st.slider("Select Rating", 1, 5, 3)
+# ⭐ Rating Dropdown
+rating = st.selectbox(
+    "Select Rating",
+    [1, 2, 3, 4, 5]
+)
 
 # 📝 Review Input
 review = st.text_area("Enter Review")
 
-# 🔘 Button
+# 🔘 Check Button
 if st.button("Check"):
 
     if review.strip() == "":
         st.warning("Please enter a review")
 
     else:
-        # Combine rating + review
-        input_text = str(rating) + " " + review
+        # Combine rating and review
+        input_text = f"{rating} {review}"
 
-        # Transform input
+        # Convert to vector
         vec = vectorizer.transform([input_text])
 
         # Predict
         prediction = model.predict(vec)[0]
 
-        # Probability
+        # Confidence
         prob = model.predict_proba(vec)[0]
 
-        # Output
+        # Show result
         if prediction == 1:
             st.error(f"⚠️ Fake Review Detected ({prob[1]*100:.2f}% confidence)")
         else:
